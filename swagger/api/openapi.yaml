@@ -1,0 +1,293 @@
+openapi: 3.0.0
+info:
+  description: This is the Simple Restful API by gin-golang
+  title: Restful API Demo
+  version: 1.0.0
+  contact:
+    email: symplesims@gmail.com
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+  termsOfService: ""
+
+basePath: "/"
+
+schemes:
+  - https
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
+#securityDefinitions:
+#  keystone:
+#    type: apiKey
+#    in: header
+#    name: X-Auth-Token
+#security:
+#  - keystone: []
+
+servers:
+  - description: Development
+    url: http://localhost:8080/
+  #    url: http://{host}:{port}/
+  #    variables:
+  #      host:
+  #        default: "localhost"
+  #      port:
+  #        default: "8080"
+  - description: Production
+    url: http://apiserver.user.example:8080/api
+tags:
+  - description: API for system information
+    name: defaults
+  - description: API for user information
+    name: users
+#  - description: API for health metrics
+#    name: health
+paths:
+  /health:
+    get:
+      operationId: GetHealth
+      summary: health
+      description: Health Check
+      tags:
+        - defaults
+      responses:
+        200:
+          description: OK!
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    example: ok
+                    type: string
+                type: object
+  /users:
+    # users-get
+    get:
+      operationId: GetUsers
+      summary: 사용자 목록 조회
+      description: 사용자 목록 정보를 제공 합니다.
+      tags:
+        - users
+      responses:
+        200:
+          description: 사용자 목록 정보를 제공 합니다.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    # users-add
+    post:
+      operationId: AddUser
+      summary: 사용자 정보 등록
+      description: 사용자 정보를 신규로 저장 합니다.
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: User's first name.
+                  nullable: false
+                  example: apple
+                lastName:
+                  description: User's last name.
+                  type: string
+                  nullable: false
+                  example: Fruit
+                email:
+                  description: User's email.
+                  type: string
+                  nullable: false
+                  example: "apple@test.io"
+                role:
+                  description: User's role.
+                  type: string
+                  nullable: false
+                  example: "Admin"
+                title:
+                  description: User's title.
+                  type: string
+                  nullable: true
+                  example: "Mr"
+                usercode:
+                  description: User's code.
+                  type: string
+                  nullable: false
+                  example: "13209713"
+      responses:
+        201:
+          description: 사용자 정보를 신규로 등록 합니다.
+  /users/{id}:
+    # users-id-get
+    get:
+      operationId: GetUser
+      summary: 사용자 정보 조회
+      description: 사용자 정보를 제공 합니다.
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 사용자 아이디
+          schema:
+            type: integer
+            format: int
+            example: 1
+      responses:
+        200:
+          description: 사용자 아이디에 해당하는 사용자 정보를 제공 합니다.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    # users-id-update
+    put:
+      operationId: UpdateUser
+      summary: 사용자 정보 수정
+      description: 사용자 정보를 수정 합니다.
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 사용자 아이디
+          schema:
+            type: integer
+            format: int
+            example: 3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: User's ID
+                  nullable: false
+                  example: 3
+                  required: true
+                firstName:
+                  type: string
+                  description: User's first name.
+                  nullable: false
+                  example: apple
+                lastName:
+                  description: User's last name.
+                  type: string
+                  nullable: false
+                  example: Fruit
+                email:
+                  description: User's email.
+                  type: string
+                  nullable: false
+                  example: "apple@test.io"
+                role:
+                  description: User's role.
+                  type: string
+                  nullable: false
+                  example: "Admin"
+                title:
+                  description: User's title.
+                  type: string
+                  nullable: true
+                  example: "Mr"
+                usercode:
+                  description: User's code.
+                  type: string
+                  nullable: false
+                  example: "13209713"
+      responses:
+        200:
+          description: 사용자 정보를 수정 합니다.
+    # users-id-delete
+    delete:
+      operationId: DeleteUser
+      summary: 사용자 정보 삭제
+      description: 사용자 정보를 삭제 합니다.
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 사용자 아이디
+          schema:
+            type: integer
+            format: int
+            example: 3
+      responses:
+        204:
+          description: 사용자 아이디에 해당하는 사용자 정보를 삭제 합니다.
+
+
+
+# Descriptions of common components
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User ID.
+          nullable: false
+          readOnly: true
+        firstName:
+          type: string
+          description: User's first name.
+          nullable: false
+          example: Frank
+        lastName:
+          description: User's last name.
+          type: string
+          nullable: false
+          example: Murphy
+        email:
+          description: User's email.
+          type: string
+          nullable: false
+          example: "frank.murphy@rustvale.com"
+        role:
+          description: User's role.
+          type: string
+          nullable: false
+          example: "Admin"
+        title:
+          description: User's title.
+          type: string
+          nullable: true
+          example: "Mr"
+        usercode:
+          description: User's code.
+          type: string
+          nullable: false
+          example: "fr1234"
+        createDts:
+          description: Created timestamp.
+          type: timestamp
+          readOnly: true
+        uipdateDts:
+          description: Created timestamp.
+          type: timestamp
+          readOnly: true
+      required:
+        - firstName
+        - lastName
+        - email
+        - role
+        - usercode
