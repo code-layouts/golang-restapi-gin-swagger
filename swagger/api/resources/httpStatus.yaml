@@ -1,0 +1,113 @@
+definitions:
+  OK:
+    description: OK!
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: OK!
+            code:
+              type: integer
+              format: int32
+              example: 200
+  NoContent:
+    description: No Content
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: No Content
+            code:
+              type: integer
+              format: int32
+              example: 204
+  BadRequest:
+    description: Invalid Request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Invalid Request
+            code:
+              type: integer
+              format: int32
+              example: 400
+  UnAuthorized:
+    description: UnAuthorized
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: UnAuthorized
+            code:
+              type: integer
+              format: int32
+              example: 401
+  Forbidden:
+    description: Forbidden
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Forbidden
+            code:
+              type: integer
+              format: int32
+              example: 403
+  NotFound:
+    description: Not Found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              example: Not Found
+              type: string
+            code:
+              type: integer
+              format: int32
+              example: 404
+  LimitRequest:
+    description: Limit request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              example: Limit request
+              type: string
+            code:
+              type: integer
+              format: int32
+              example: 429
+  InternalServerError:
+    description: Internal server error
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Internal server error
+            code:
+              type: integer
+              format: int32
+              example: 500

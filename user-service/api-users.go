@@ -38,7 +38,7 @@ func GetUser(c *gin.Context) {
 	if user.Id > -1 {
 		c.JSON(http.StatusOK, user)
 	} else {
-		c.JSON(http.StatusOK, gin.H{"status": "no value"})
+		c.JSON(http.StatusOK, gin.H{"message": "no value"})
 	}
 }
 
@@ -56,7 +56,7 @@ func AddUser(c *gin.Context) {
 
 	repo.Add(user)
 
-	c.JSON(http.StatusOK, gin.H{"status": "no value"})
+	c.JSON(http.StatusOK, gin.H{"message": "no value"})
 }
 
 func DeleteUser(c *gin.Context) {
@@ -64,26 +64,41 @@ func DeleteUser(c *gin.Context) {
 	idVal, _ := strconv.Atoi(id)
 	f.Println("DeleteUser By Id:", idVal)
 	var repo = NewRepository(toUsers())
+	if repo.Exists(idVal) == false {
+		c.JSON(http.StatusNotFound, gin.H{"message": "resource not found"})
+		return
+	}
 	repo.Delete(idVal)
-	c.JSON(http.StatusOK, gin.H{"status": "no value"})
+	c.JSON(http.StatusNoContent, gin.H{"message": "Resource deleted successful."})
 }
 
 func UpdateUser(c *gin.Context) {
 	id := c.Params.ByName("id")
 	idVal, _ := strconv.Atoi(id)
-	f.Println("UpdateUser By Id:", idVal)
+	f.Println("UpdateUser()", id)
+	if idVal < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Can not find User ID"})
+		return
+	}
 	var user User
 	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Json UnMarshalling Error"})
 		return
 	}
 	if idVal != user.Id {
-		f.Println("Does not match User ID")
+		c.JSON(http.StatusBadRequest, gin.H{"message": "User ID dose not match."})
 		return
 	}
 	var repo = NewRepository(toUsers())
+	oldUser := repo.GetById(idVal)
+	if oldUser == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Resource not found. {idVal}"})
+		return
+	}
+
 	updatedUser, err := repo.Update(user)
 	if err != nil {
-		f.Println("Updated ERR", err)
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, updatedUser)

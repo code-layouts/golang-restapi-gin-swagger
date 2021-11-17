@@ -27,8 +27,9 @@ type UserRepository interface {
 	GetById(id int) (User, error)
 	NewId(users []User) int
 	Add(user User) (int, error)
-	Delete(id int)
+	Delete(id int) error
 	Update(user User) (User, error)
+	Exists(id int) bool
 }
 
 type JsonUserRepository struct {
@@ -39,6 +40,15 @@ type JsonUserRepository struct {
 
 func NewRepository(users []User) *JsonUserRepository {
 	return &JsonUserRepository{users}
+}
+
+func (repo *JsonUserRepository) Exists(id int) bool {
+	for _, e := range repo.users {
+		if e.Id == id {
+			return true
+		}
+	}
+	return false
 }
 
 func (repo *JsonUserRepository) NewId() int {
@@ -55,13 +65,13 @@ func (repo *JsonUserRepository) GetAll() []User {
 	return repo.users
 }
 
-func (repo *JsonUserRepository) GetById(id int) User {
+func (repo *JsonUserRepository) GetById(id int) *User {
 	for _, e := range repo.users {
 		if e.Id == id {
-			return e
+			return &e
 		}
 	}
-	return User{}
+	return nil
 }
 
 func (repo *JsonUserRepository) Add(user User) int {
@@ -79,19 +89,16 @@ func (repo *JsonUserRepository) Add(user User) int {
 	return newId
 }
 
-func (repo *JsonUserRepository) Delete(id int) {
-	f.Println(id)
-
-	var idx int = -1
+func (repo *JsonUserRepository) Delete(id int) error {
+	var idx = -1
 	for i, e := range repo.users {
 		if e.Id == id {
 			idx = i
 			break
 		}
 	}
-
 	if idx < 1 {
-		f.Println("ID ", id, " is not exists.")
+		return errors.New(f.Sprintf("Can not find UserID '%s'", id))
 	}
 	users := repo.users
 
@@ -99,17 +106,15 @@ func (repo *JsonUserRepository) Delete(id int) {
 	users = users[:len(users)-1]
 	result, err := json.MarshalIndent(users, "", "  ")
 	if err != nil {
-		f.Println("AddToJson.err: ", err)
+		return errors.New(f.Sprintln("Json Marshalling Error ", err.Error()))
 	}
 	if fileErr := ioutil.WriteFile(JsonFileUser, result, 0644); fileErr != nil {
-		f.Println("fileErr:", fileErr)
+		return errors.New(f.Sprintln("File Write Error ", err.Error()))
 	}
+	return nil
 }
 
 func (repo *JsonUserRepository) Update(user User) (User, error) {
-	if user.Id < 1 {
-		return User{}, errors.New("Can not find User ID.")
-	}
 	var users = repo.users
 	var idx int = -1
 	for i, e := range users {
@@ -117,9 +122,6 @@ func (repo *JsonUserRepository) Update(user User) (User, error) {
 			idx = i
 			break
 		}
-	}
-	if idx < 1 {
-		return User{}, errors.New("Can not find User by ID")
 	}
 	users[idx] = user
 	result, err := json.MarshalIndent(users, "", "  ")

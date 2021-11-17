@@ -11,44 +11,35 @@ import (
 
 func Router() *gin.Engine {
 	router := gin.New()
-	router.Use(
-		gin.Recovery(),
-	)
+	router.Use(gin.Recovery())
 
-	// endpoints
-	router.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "server page")
-	})
+	router.Static("/resources", "./swagger/api/resources")
 
-	route := router.Group("/")
+	// swagger UI: url pointing to API definition
+	// http://localhost:8080/swagger/index.html
+	routeRoot := router.Group("/")
 	{
-		// swagger UI: url pointing to API definition
-		// http://localhost:8080/swagger/index.html
-		route.GET("/openapi.yaml",
+		routeRoot.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "server page") })
+		routeRoot.GET("/openapi.yaml",
 			func(c *gin.Context) {
 				if gin.Mode() == gin.ReleaseMode {
-					c.String(404, "openapi.yaml not found")
+					f.Println("gin.ReleaseMode", gin.ReleaseMode)
+					c.String(404, "ReleaseMode 에선 API 를 지원하지 않습니다. openapi.yaml not found")
 					return
 				}
 			},
 			func(c *gin.Context) { c.File("./swagger/api/openapi.yaml") },
 		)
 
-		route.GET("/swagger/*any",
-			ginSwagger.WrapHandler(swaggerFiles.Handler,
-				ginSwagger.URL("/openapi.yaml"),
-			),
-		)
-
+		swaggerConfig := &ginSwagger.Config{URL: "/openapi.yaml"}
+		routeRoot.GET("/swagger/*any", ginSwagger.CustomWrapHandler(swaggerConfig, swaggerFiles.Handler))
 	}
-
 	return router
 }
 
-// GetHealth - health
 func GetHealth(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
+		"message": "ok",
 	})
 	f.Println("GetHealth")
 }

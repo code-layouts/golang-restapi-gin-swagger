@@ -10,15 +10,17 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
   termsOfService: ""
 
-basePath: "/"
+#basePath: "/"
 
-schemes:
-  - https
-  - http
-consumes:
-  - application/json
-produces:
-  - application/json
+#schemes:
+#  - https
+#  - http
+
+#consumes:
+#  - application/json
+#
+#produces:
+#  - application/json
 
 #securityDefinitions:
 #  keystone:
@@ -30,15 +32,20 @@ produces:
 
 servers:
   - description: Development
-    url: http://localhost:8080/
+    url: '{protocol}://localhost:8080/'
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: http
   #    url: http://{host}:{port}/
-  #    variables:
   #      host:
   #        default: "localhost"
   #      port:
   #        default: "8080"
   - description: Production
-    url: http://apiserver.user.example:8080/api
+    url: https://apiserver.user.example:8080/api
 tags:
   - description: API for system information
     name: defaults
@@ -56,15 +63,9 @@ paths:
         - defaults
       responses:
         200:
-          description: OK!
-          content:
-            application/json:
-              schema:
-                properties:
-                  status:
-                    example: ok
-                    type: string
-                type: object
+          $ref: './resources/httpStatus.yaml#/definitions/OK'
+        500:
+          $ref: './resources/httpStatus.yaml#/definitions/InternalServerError'
   /users:
     # users-get
     get:
