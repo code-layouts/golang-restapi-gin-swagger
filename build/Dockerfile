@@ -25,7 +25,7 @@ ENV VERSION=${version}
 WORKDIR /app
 
 COPY swagger ./swagger/
-COPY data ./data/
+COPY build/users.json ./data/
 COPY --from=builder /workspace/app-service ./app-service
 
 ENTRYPOINT ["./app-service"]

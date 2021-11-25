@@ -69,23 +69,16 @@ target/service
 curl -v -L -X GET 'http://localhost:8080/users' -H 'Content-Type: application/json'
 ```
 
-
 ## Docker
 도커 이미지를 빌드 하고 실행 합니다.
-go mod 를 초기화 하지 않았다면 아래 명령을 통해 초기화를 진행 합니다.
 
-```
-go mod init example/apiserver/v1
-go mod tidy 
-```
-
-### Docker Build
+- **Docker Build**  
 도커 이미지를 빌드 합니다. 
 ```
 docker build -t gogin-sample-service:1.0.0 -f build/Dockerfile .
 ```
 
-### Docker Run
+- **Docker Run**  
 도커 컨테이너를 실행 합니다.
 ```
 docker run -d  --name=gogin-sample-service -p 8080:8080 gogin-sample-service:1.0.0
@@ -94,10 +87,11 @@ docker run -d  --name=gogin-sample-service -p 8080:8080 gogin-sample-service:1.0
 # docker exec -it gogin-sample-service ash
 ```
 
-### Docker Push
+- **Docker Push**  
 리모트 리파지토리에 도커 이미지를 업로드(push) 합니다.
+아래는 AWS ECR 저장소에 도커 이미지를 업로드 하는 예시 입니다. 
 ```
-export DOCKER_REPO=827519537363.dkr.ecr.ap-northeast-2.amazonaws.com/melonops
+export DOCKER_REPO=<YOUR_ECR_REPOSITORY_URI>
 
 docker tag gogin-sample-service:1.0.0 ${DOCKER_REPO}:gogin-sample-service-v1.0.0
 aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${DOCKER_REPO}
