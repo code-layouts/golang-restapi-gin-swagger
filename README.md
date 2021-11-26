@@ -75,16 +75,16 @@ curl -v -L -X GET 'http://localhost:8080/users' -H 'Content-Type: application/js
 - **Docker Build**  
 도커 이미지를 빌드 합니다. 
 ```
-docker build -t gogin-sample-service:1.0.0 -f build/Dockerfile .
+docker build -t sample-golang-service:1.0.0 -f build/Dockerfile .
 ```
 
 - **Docker Run**  
 도커 컨테이너를 실행 합니다.
 ```
-docker run -d  --name=gogin-sample-service -p 8080:8080 gogin-sample-service:1.0.0
+docker run -d  --name=sample-golang-service -p 8080:8080 sample-golang-service:1.0.0
 
 # 컨테이너 접속 (도커 이미지를 scratch 베이스로 빌드하면 shell 이 없습니다.)
-# docker exec -it gogin-sample-service ash
+# docker exec -it sample-golang-service ash
 ```
 
 - **Docker Push**  
@@ -93,9 +93,9 @@ docker run -d  --name=gogin-sample-service -p 8080:8080 gogin-sample-service:1.0
 ```
 export DOCKER_REPO=<YOUR_ECR_REPOSITORY_URI>
 
-docker tag gogin-sample-service:1.0.0 ${DOCKER_REPO}:gogin-sample-service-v1.0.0
+docker tag sample-golang-service:1.0.0 ${DOCKER_REPO}:sample-golang-service-v1.0.0
 aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${DOCKER_REPO}
-docker push ${DOCKER_REPO}:gogin-sample-service-v1.0.0
+docker push ${DOCKER_REPO}:sample-golang-service-v1.0.0
 ```
 
 ## Appendix
